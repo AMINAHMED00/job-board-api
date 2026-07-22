@@ -83,7 +83,7 @@ export const deleteCompany = async(req : any , res : Response) =>{
     }
     catch(err : any) {
         if (err.message === "Forbidden") {
-            return res.status(500).json({
+            return res.status(403).json({
                 msg : "Forbidden"
             });
         }

@@ -18,19 +18,23 @@ A backend REST API for a job board platform, where companies can post jobs and u
 - Company profile management (create, update, delete — owner-only)
 - Job posting management (create, update, delete — owner-only)
 - Public job listing with search, filtering (keyword, location, salary range), and pagination
+- Job applications: users can apply to jobs, view their own applications, and companies can view/manage applicants for their jobs
+- Request body validation with Zod on all write endpoints
+- Rate limiting on authentication endpoints to prevent brute-force attacks
 
 ## Project Structure
 
 ```
 .
 ├── controllers/       # Request handlers
-├── middlewares/        # Express middlewares (JWT auth, role checks)
+├── middlewares/        # Express middlewares (JWT auth, role checks, validation, rate limiting)
 ├── model/              # Prisma client instance
 ├── prisma/
 │   ├── schema.prisma   # Database schema
 │   └── migrations/     # Prisma migration history
 ├── routes/              # Express route definitions
 ├── services/            # Business logic / database queries
+├── validations/         # Zod schemas for request validation
 ├── server.ts            # App entry point
 └── prisma.config.ts     # Prisma configuration
 ```
@@ -76,6 +80,8 @@ A backend REST API for a job board platform, where companies can post jobs and u
 
 ### Auth — `/api/users`
 
+Rate limited (10 requests per 15 minutes per IP).
+
 | Method | Endpoint    | Auth required | Description              |
 |--------|-------------|----------------|---------------------------|
 | POST   | `/register` | No             | Register a new user       |
@@ -103,12 +109,21 @@ A backend REST API for a job board platform, where companies can post jobs and u
 | PATCH  | `/update/:id` | Yes (`COMPANY`, owner)         | Update a job                           |
 | DELETE | `/delete/:id` | Yes (`COMPANY` or `ADMIN`)     | Delete a job                           |
 
+### Applications — `/api/applications`
+
+| Method | Endpoint                | Auth required        | Description                                  |
+|--------|--------------------------|-------------------------|-------------------------------------------------|
+| POST   | `/apply/:jobId`          | Yes (`USER`)            | Apply to a job                                  |
+| GET    | `/my-applications`       | Yes (`USER`)            | Get the logged-in user's own applications       |
+| GET    | `/job/:jobId`            | Yes (`COMPANY`, owner)  | Get all applications for a job the company owns |
+| PATCH  | `/update/:applicationId` | Yes (`COMPANY`, owner)  | Update an application's status (`PENDING`, `ACCEPTED`, `REJECTED`) |
+
+A user can only apply to the same job once (enforced at the database level).
+
 ## Known Limitations / Roadmap
 
-- **Applications are not implemented yet.** The `Application` model exists in the Prisma schema, but there are no routes/controllers/services for users to apply to jobs or for companies to view applicants.
-- No request body validation library (e.g. Zod) is used yet — inputs aren't strictly validated.
-- `PORT` is currently hardcoded in `server.ts` rather than read from the environment.
 - No automated tests yet.
+- No global error-handling middleware — errors are caught individually in each controller.
 
 ## License
 

@@ -17,7 +17,7 @@ export const authMiddleware = (roles :string[] = []) =>{
         const token = authHeader.split(" ")[1];
         try{
             const payload = jwt.verify(token , process.env.JWT_SECRET!) as JwtPayload ;
-            req.user = payload ;
+            req.user = payload ; // role 
 
             // check role..
             if(roles.length && !roles.includes(payload.role)){

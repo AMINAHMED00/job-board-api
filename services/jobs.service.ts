@@ -17,7 +17,7 @@ export class jobServices {
           });
 
           if(!company){
-            throw new Error("forbidden");
+            throw new Error("Forbidden");
           }
 
           return prisma.job.create({

@@ -11,7 +11,7 @@ export interface createuserDTO {
 export class user_services {
     constructor(){}
 
-    async getProfile(userId : string){
+    async getProfile(userId : string){  
         return prisma.user.findUnique({
             where :{
                 id : userId

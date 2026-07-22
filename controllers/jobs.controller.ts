@@ -83,7 +83,7 @@ export const updateJob = async(req : any , res : Response) =>{
         });
     }
     catch(err : any){
-        if(err.mssage === "NotFound"){
+        if(err.message === "NotFound"){
             return res.status(404).json({msg : "Job not found or not yours"});}
         res.status(500).json({
             msg : "server error",
@@ -105,7 +105,7 @@ export const deleteJob = async(req : any , res : Response) =>{
         });
     }
     catch(err : any){
-        if(err.massage === "NotFound"){
+        if(err.message === "NotFound"){
             return res.status(404).json({msg : "job not found or not yours"});
         }
         res.status(500).json({msg : "server error " , error : err});
